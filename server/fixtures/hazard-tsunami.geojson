@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [139.775, 35.664],
+            [139.792, 35.664],
+            [139.792, 35.672],
+            [139.775, 35.672],
+            [139.775, 35.664]
+          ]
+        ]
+      },
+      "properties": { "label": "津波浸水想定 1.0m未満", "note": "モックデータ（架空の区域）" }
+    }
+  ]
+}
