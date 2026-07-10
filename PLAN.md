@@ -295,7 +295,8 @@ export function aggregateByPeriod(records: { Period: string; TradePrice: string 
 - LayerPanelのトグル→タイルfetch→fillレイヤー表示、クリック時のハザードバッジ
 - **受け入れ基準**: モックモードでハザードトグルONにするとポリゴンが表示され、区域内のポイントクリックでバッジが出る
 
-### Phase 5（ストレッチ・任意）: 用途地域レイヤー / 地価公示ポイント / ヒートマップ磨き込み
+### Phase 5（ストレッチ・任意）: 用途地域レイヤー / 地価公示ポイント / 区別価格ランキング
+詳細計画は [docs/PLAN-phase5.md](docs/PLAN-phase5.md) を参照。
 ### Phase 6: 仕上げ
 - ローディング/エラーのUI表示（トースト等は不要、パネル内テキストで可）、README完成（スクリーンショット、APIキー申請手順リンク、モック/実モード説明）、`npm run lint && npm test && npm run build` 全通過
 - **受け入れ基準**: クリーンclone → `npm install` → `npm run dev` だけでモックのフルデモが動く

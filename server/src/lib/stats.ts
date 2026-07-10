@@ -34,6 +34,35 @@ export interface PeriodStat {
   count: number;
 }
 
+/** 現在（now）を含む直近N四半期の "YYYYQN" 一覧（新しい順） */
+export function recentQuarters(n: number, now = new Date()): string[] {
+  const total = now.getFullYear() * 4 + Math.floor(now.getMonth() / 3);
+  return Array.from({ length: n }, (_, i) => {
+    const t = total - i;
+    return `${Math.floor(t / 4)}Q${(t % 4) + 1}`;
+  });
+}
+
+/**
+ * 直近N四半期に該当するレコードだけで TradePrice の中央値と件数を計算。
+ * 対象が0件なら null。
+ */
+export function medianOfRecentQuarters(
+  records: Array<{ Period?: string; TradePrice?: string }>,
+  quarters: number,
+  now = new Date(),
+): { median: number; count: number } | null {
+  const target = new Set(recentQuarters(quarters, now));
+  const prices: number[] = [];
+  for (const r of records) {
+    const period = parsePeriod(r.Period);
+    const price = parseNumeric(r.TradePrice);
+    if (period !== null && price !== null && target.has(period)) prices.push(price);
+  }
+  const m = median(prices);
+  return m === null ? null : { median: m, count: prices.length };
+}
+
 /** XIT001 レコード配列 → 四半期ごとの TradePrice 中央値・件数（period 昇順） */
 export function aggregateByPeriod(
   records: Array<{ Period?: string; TradePrice?: string }>,

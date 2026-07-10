@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { getCached, setCached } from "./cache.js";
 import { findLayer, layers } from "./config/layers.js";
-import { aggregateByPeriod, type PeriodStat } from "./lib/stats.js";
+import { aggregateByPeriod, medianOfRecentQuarters, type PeriodStat } from "./lib/stats.js";
 import { isMockMode, loadFixture } from "./mock.js";
 import { fetchReinfolib, mapWithConcurrency, UpstreamError } from "./reinfolib.js";
 
@@ -16,6 +16,36 @@ interface Xit001Response {
 interface Xit002Response {
   status?: string;
   data?: Array<{ id: string | number; name: string }>;
+}
+
+async function getCities(): Promise<Array<{ id: string; name: string }>> {
+  const cacheKey = `cities:${TOKYO_PREF_CODE}`;
+  const cached = getCached<{ cities: Array<{ id: string; name: string }> }>(cacheKey);
+  if (cached) return cached.cities;
+  const raw = (
+    isMockMode()
+      ? loadFixture("cities.json")
+      : await fetchReinfolib("XIT002", { area: TOKYO_PREF_CODE })
+  ) as Xit002Response;
+  const cities = (raw.data ?? []).map((m) => ({ id: String(m.id), name: m.name }));
+  setCached(cacheKey, { cities }, 7 * DAY_MS);
+  return cities;
+}
+
+/** 1年分のXIT001レコードを取得（/api/transactions と同じキャッシュキーを共有） */
+async function getYearRecords(year: string, city: string): Promise<Array<Record<string, string>>> {
+  const cacheKey = `tx:${year}::${city}:`;
+  const cached = getCached<Xit001Response>(cacheKey);
+  if (cached) return cached.data ?? [];
+  const body = (await fetchReinfolib("XIT001", {
+    year,
+    area: TOKYO_PREF_CODE,
+    city,
+    language: "ja",
+  })) as Xit001Response | null;
+  const result = body ?? { data: [] };
+  setCached(cacheKey, result, DAY_MS);
+  return result.data ?? [];
 }
 
 export function createApp() {
@@ -35,10 +65,11 @@ export function createApp() {
   // フロントがレイヤートグルUIを動的生成するための一覧。apiCode 自体は渡さない。
   app.get("/api/layers", (c) =>
     c.json({
-      layers: layers.map(({ id, label, kind, minZoom, maxZoom, apiCode }) => ({
+      layers: layers.map(({ id, label, kind, group, minZoom, maxZoom, apiCode }) => ({
         id,
         label,
         kind,
+        group,
         minZoom,
         maxZoom,
         wired: apiCode !== null,
@@ -46,19 +77,49 @@ export function createApp() {
     }),
   );
 
-  app.get("/api/cities", async (c) => {
-    const cacheKey = `cities:${TOKYO_PREF_CODE}`;
-    const cached = getCached<{ cities: Array<{ id: string; name: string }> }>(cacheKey);
+  app.get("/api/cities", async (c) => c.json({ cities: await getCities() }));
+
+  // 23区の直近N四半期・取引価格中央値ランキング
+  app.get("/api/ranking", async (c) => {
+    const quartersParam = c.req.query("quarters") ?? "4";
+    if (!/^[1-8]$/.test(quartersParam)) {
+      return c.json({ error: "query param 'quarters' must be 1-8" }, 400);
+    }
+    const quarters = Number(quartersParam);
+
+    const cacheKey = `rank:${quarters}`;
+    const cached = getCached<object>(cacheKey);
     if (cached) return c.json(cached);
 
-    const raw = (
-      isMockMode()
-        ? loadFixture("cities.json")
-        : await fetchReinfolib("XIT002", { area: TOKYO_PREF_CODE })
-    ) as Xit002Response;
-    const cities = (raw.data ?? []).map((m) => ({ id: String(m.id), name: m.name }));
-    const body = { cities };
-    setCached(cacheKey, body, 7 * DAY_MS);
+    if (isMockMode()) {
+      const body = loadFixture("ranking.json") as object;
+      setCached(cacheKey, body, DAY_MS);
+      return c.json(body);
+    }
+
+    // 実モード: 区ごとに今年+昨年のXIT001を取得（最大23区×2年=46コール、4並列・1日キャッシュ）
+    const wards = (await getCities()).filter((city) => city.id.startsWith("131"));
+    const currentYear = new Date().getFullYear();
+    const years = [String(currentYear), String(currentYear - 1)];
+    const results = await mapWithConcurrency(wards, 4, async (ward) => {
+      const perYear = await Promise.all(
+        years.map(async (year) => {
+          try {
+            return await getYearRecords(year, ward.id);
+          } catch (e) {
+            if (e instanceof UpstreamError && e.status !== 404) throw e;
+            return [];
+          }
+        }),
+      );
+      const stat = medianOfRecentQuarters(perYear.flat(), quarters);
+      return stat ? { city: ward.id, name: ward.name, ...stat } : null;
+    });
+    const entries = results
+      .filter((e): e is NonNullable<typeof e> => e !== null)
+      .sort((a, b) => b.median - a.median);
+    const body = { quarters, entries };
+    setCached(cacheKey, body, DAY_MS);
     return c.json(body);
   });
 

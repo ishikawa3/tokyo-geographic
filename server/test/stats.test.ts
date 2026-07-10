@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { aggregateByPeriod, median, parseNumeric, parsePeriod } from "../src/lib/stats.js";
+import {
+  aggregateByPeriod,
+  median,
+  medianOfRecentQuarters,
+  parseNumeric,
+  parsePeriod,
+  recentQuarters,
+} from "../src/lib/stats.js";
 
 describe("parseNumeric", () => {
   it("文字列の数値をパースする", () => {
@@ -45,6 +52,42 @@ describe("median", () => {
     const arr = [3, 1, 2];
     median(arr);
     expect(arr).toEqual([3, 1, 2]);
+  });
+});
+
+describe("recentQuarters", () => {
+  it("現在を含む直近N四半期を新しい順で返す", () => {
+    const now = new Date(2026, 6, 9); // 2026 Q3
+    expect(recentQuarters(4, now)).toEqual(["2026Q3", "2026Q2", "2026Q1", "2025Q4"]);
+  });
+  it("年またぎ（Q1起点）", () => {
+    const now = new Date(2026, 0, 15); // 2026 Q1
+    expect(recentQuarters(2, now)).toEqual(["2026Q1", "2025Q4"]);
+  });
+});
+
+describe("medianOfRecentQuarters", () => {
+  const now = new Date(2026, 6, 9); // 2026 Q3
+  it("直近N四半期のレコードだけで中央値と件数を出す", () => {
+    const records = [
+      { Period: "2026年第３四半期", TradePrice: "300" },
+      { Period: "2026年第２四半期", TradePrice: "100" },
+      { Period: "2025年第４四半期", TradePrice: "200" }, // 4四半期前=ちょうど境界内
+      { Period: "2025年第３四半期", TradePrice: "9999" }, // 5四半期前=範囲外
+    ];
+    expect(medianOfRecentQuarters(records, 4, now)).toEqual({ median: 200, count: 3 });
+  });
+  it("範囲内が0件なら null", () => {
+    const records = [{ Period: "2020年第１四半期", TradePrice: "100" }];
+    expect(medianOfRecentQuarters(records, 4, now)).toBeNull();
+    expect(medianOfRecentQuarters([], 4, now)).toBeNull();
+  });
+  it("パース不能レコードは無視する", () => {
+    const records = [
+      { Period: "2026年第３四半期", TradePrice: "非公開" },
+      { Period: "2026年第３四半期", TradePrice: "500" },
+    ];
+    expect(medianOfRecentQuarters(records, 1, now)).toEqual({ median: 500, count: 1 });
   });
 });
 

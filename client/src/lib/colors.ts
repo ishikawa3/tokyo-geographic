@@ -22,10 +22,39 @@ export const HAZARD_COLORS: Record<string, string> = {
   landslide: "#eb6834", // orange
   tsunami: "#4a3aa7", // violet
   "storm-surge": "#e87ba4", // magenta
-  "land-price-points": "#eda100", // yellow
 };
 
+/** 地価公示・地価調査ポイントの色（取引ポイントの青系と衝突しない黄系） */
+export const LAND_PRICE_COLOR = "#eda100";
+
 export const CHART_LINE_COLOR = "#2a78d6";
+
+/**
+ * 用途地域の色分けで参照するGeoJSONプロパティキー。
+ * 実APIではキー名が異なる可能性が高いため、ここに一元化しておく。
+ */
+export const YOUTO_PROP_KEY = "用途地域";
+
+/**
+ * 用途地域の種別色。国交省の用途地域図の慣習配色に寄せた淡色
+ * （住居系=緑〜黄、商業系=赤系、工業系=青紫系）。凡例とセットで使う。
+ */
+export const YOUTO_COLORS: Record<string, string> = {
+  第一種低層住居専用地域: "#a8d8a8",
+  第二種低層住居専用地域: "#c8e6b8",
+  第一種中高層住居専用地域: "#b8e0c8",
+  第二種中高層住居専用地域: "#d8ecc0",
+  第一種住居地域: "#f5eea8",
+  第二種住居地域: "#f7e3a0",
+  準住居地域: "#f3d59a",
+  近隣商業地域: "#f6c8c8",
+  商業地域: "#f2a0a0",
+  準工業地域: "#d8c0e8",
+  工業地域: "#b8cce8",
+  工業専用地域: "#a8b8d8",
+};
+
+export const YOUTO_FALLBACK_COLOR = "#cccccc";
 
 export function priceColor(price: number): string {
   for (let i = 0; i < PRICE_BINS.length; i++) {

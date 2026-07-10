@@ -42,6 +42,14 @@ export const PROP_LABELS: Array<[key: string, label: string]> = [
   ["Period", "取引時期"],
 ];
 
+/** 地価公示・地価調査ポイント用の表示順とラベル（キー名は実API確認まで暫定） */
+export const PROP_LABELS_LAND_PRICE: Array<[key: string, label: string]> = [
+  ["PriceCategory", "区分"],
+  ["StandardLotNumber", "標準地番号"],
+  ["Municipality", "市区町村"],
+  ["UseCategory", "用途区分"],
+];
+
 export interface QuarterOption {
   value: string; // YYYYN
   label: string; // "2024 Q1"
