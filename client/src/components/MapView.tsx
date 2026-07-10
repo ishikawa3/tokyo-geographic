@@ -359,11 +359,10 @@ export function MapView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 期間変更 → 取引ポイントのキャッシュを破棄して再取得
+  // 期間変更 → 取引ポイントを再取得（キャッシュキーに期間が含まれるためクリア不要）
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    pointsLoader.current.clear();
     void reloadPointLayer(map, POINTS_LAYER_ID);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapReady, period.from, period.to]);
