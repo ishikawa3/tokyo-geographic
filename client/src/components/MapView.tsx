@@ -1,106 +1,179 @@
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
-import { HAZARD_COLORS, PRICE_BINS, PRICE_COLORS } from "../lib/colors";
+import {
+  HAZARD_COLORS,
+  LAND_PRICE_COLOR,
+  PRICE_BINS,
+  PRICE_COLORS,
+  YOUTO_COLORS,
+  YOUTO_FALLBACK_COLOR,
+  YOUTO_PROP_KEY,
+} from "../lib/colors";
 import { boundsToTiles, clampZoom } from "../lib/tiles";
 import { TileLoader } from "../lib/tileLoader";
 import type { LayerInfo, PeriodRange, PointDisplayMode, Selection } from "../types";
 
 const POINTS_LAYER_ID = "transaction-points";
+const LANDPRICE_LAYER_ID = "land-price-points";
 const CIRCLE_LAYER = "points-circle";
 const HEATMAP_LAYER = "points-heat";
+const LANDPRICE_CIRCLE_LAYER = "landprice-circle";
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
 const MOVE_DEBOUNCE_MS = 300;
+
+export interface MapApi {
+  flyTo: (lngLat: [number, number], zoom?: number) => void;
+}
 
 interface MapViewProps {
   layers: LayerInfo[];
   pointMode: PointDisplayMode;
-  activeHazards: string[];
+  showLandPrice: boolean;
+  landPriceYear: string;
+  activeOverlays: string[];
   period: PeriodRange;
   onSelect: (sel: Selection | null) => void;
   onStatus: (msg: string | null) => void;
+  onMapReady?: (api: MapApi) => void;
 }
 
-export function MapView({ layers, pointMode, activeHazards, period, onSelect, onStatus }: MapViewProps) {
+export function MapView({
+  layers,
+  pointMode,
+  showLandPrice,
+  landPriceYear,
+  activeOverlays,
+  period,
+  onSelect,
+  onStatus,
+  onMapReady,
+}: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
   const pointsLoader = useRef(new TileLoader());
-  const hazardLoader = useRef(new TileLoader());
+  const overlayLoader = useRef(new TileLoader());
   // 各レイヤーの読み込み世代。古いレスポンスで setData しないためのトークン
   const loadTokens = useRef(new Map<string, number>());
+  // レイヤーごとのステータスメッセージ（ズームヒント・エラー）。先勝ちで1つ表示する
+  const layerStatus = useRef(new Map<string, string>());
 
   // イベントハンドラは一度だけ登録するので、最新の props は ref 経由で参照する
-  const stateRef = useRef({ layers, pointMode, activeHazards, period, onSelect, onStatus });
-  stateRef.current = { layers, pointMode, activeHazards, period, onSelect, onStatus };
+  const stateRef = useRef({
+    layers,
+    pointMode,
+    showLandPrice,
+    landPriceYear,
+    activeOverlays,
+    period,
+    onSelect,
+    onStatus,
+  });
+  stateRef.current = {
+    layers,
+    pointMode,
+    showLandPrice,
+    landPriceYear,
+    activeOverlays,
+    period,
+    onSelect,
+    onStatus,
+  };
 
-  const pointLayer = layers.find((l) => l.id === POINTS_LAYER_ID);
+  function setLayerStatus(layerId: string, msg: string | null) {
+    if (msg === null) layerStatus.current.delete(layerId);
+    else layerStatus.current.set(layerId, msg);
+    const first = layerStatus.current.values().next();
+    stateRef.current.onStatus(first.done ? null : first.value);
+  }
 
   function setSourceData(map: maplibregl.Map, sourceId: string, data: unknown) {
     const source = map.getSource(sourceId) as maplibregl.GeoJSONSource | undefined;
     source?.setData(data as never);
   }
 
-  async function reloadPoints(map: maplibregl.Map) {
-    const { layers, period, onStatus } = stateRef.current;
-    const info = layers.find((l) => l.id === POINTS_LAYER_ID);
+  /** ポイントレイヤーごとのタイルAPIクエリ。null = 現在非アクティブ */
+  function getPointQuery(layerId: string): string | null {
+    const { period, showLandPrice, landPriceYear } = stateRef.current;
+    if (layerId === POINTS_LAYER_ID) return `from=${period.from}&to=${period.to}`;
+    if (layerId === LANDPRICE_LAYER_ID) return showLandPrice ? `year=${landPriceYear}` : null;
+    return null;
+  }
+
+  async function reloadPointLayer(map: maplibregl.Map, layerId: string) {
+    const info = stateRef.current.layers.find((l) => l.id === layerId);
     if (!info) return;
-    const token = (loadTokens.current.get(POINTS_LAYER_ID) ?? 0) + 1;
-    loadTokens.current.set(POINTS_LAYER_ID, token);
+    const query = getPointQuery(layerId);
+    if (query === null) {
+      setLayerStatus(layerId, null);
+      return;
+    }
+    const token = (loadTokens.current.get(layerId) ?? 0) + 1;
+    loadTokens.current.set(layerId, token);
 
     if (Math.floor(map.getZoom()) < info.minZoom) {
-      setSourceData(map, POINTS_LAYER_ID, EMPTY_FC);
-      onStatus(`ズーム${info.minZoom}以上で取引ポイントが表示されます（ズームインしてください）`);
+      setSourceData(map, layerId, EMPTY_FC);
+      setLayerStatus(layerId, `ズーム${info.minZoom}以上で${info.label}が表示されます`);
       return;
     }
     const z = clampZoom(map.getZoom(), info.minZoom, info.maxZoom);
     const b = map.getBounds();
     const tiles = boundsToTiles(b.getWest(), b.getSouth(), b.getEast(), b.getNorth(), z);
     try {
-      const fc = await pointsLoader.current.load(
-        POINTS_LAYER_ID,
-        tiles,
-        `from=${period.from}&to=${period.to}`,
-      );
-      if (loadTokens.current.get(POINTS_LAYER_ID) !== token) return;
-      setSourceData(map, POINTS_LAYER_ID, fc);
-      onStatus(null);
+      const fc = await pointsLoader.current.load(layerId, tiles, query);
+      if (loadTokens.current.get(layerId) !== token) return;
+      setSourceData(map, layerId, fc);
+      setLayerStatus(layerId, null);
     } catch (e) {
-      if (loadTokens.current.get(POINTS_LAYER_ID) !== token) return;
-      onStatus(`取引データの取得に失敗しました: ${(e as Error).message}`);
+      if (loadTokens.current.get(layerId) !== token) return;
+      setLayerStatus(layerId, `${info.label}の取得に失敗しました: ${(e as Error).message}`);
     }
   }
 
-  async function reloadHazard(map: maplibregl.Map, layerId: string) {
-    const { layers, onStatus } = stateRef.current;
-    const info = layers.find((l) => l.id === layerId);
+  async function reloadOverlay(map: maplibregl.Map, layerId: string) {
+    const info = stateRef.current.layers.find((l) => l.id === layerId);
     if (!info) return;
     const token = (loadTokens.current.get(layerId) ?? 0) + 1;
     loadTokens.current.set(layerId, token);
 
     if (Math.floor(map.getZoom()) < info.minZoom) {
-      setSourceData(map, `hazard-src-${layerId}`, EMPTY_FC);
+      setSourceData(map, `overlay-src-${layerId}`, EMPTY_FC);
       return;
     }
     const z = clampZoom(map.getZoom(), info.minZoom, info.maxZoom);
     const b = map.getBounds();
     const tiles = boundsToTiles(b.getWest(), b.getSouth(), b.getEast(), b.getNorth(), z);
     try {
-      const fc = await hazardLoader.current.load(layerId, tiles, "");
+      const fc = await overlayLoader.current.load(layerId, tiles, "");
       if (loadTokens.current.get(layerId) !== token) return;
-      setSourceData(map, `hazard-src-${layerId}`, fc);
+      setSourceData(map, `overlay-src-${layerId}`, fc);
     } catch (e) {
       if (loadTokens.current.get(layerId) !== token) return;
-      onStatus(`${info.label}の取得に失敗しました: ${(e as Error).message}`);
+      setLayerStatus(layerId, `${info.label}の取得に失敗しました: ${(e as Error).message}`);
     }
   }
 
   function reloadActive(map: maplibregl.Map) {
-    void reloadPoints(map);
-    for (const id of stateRef.current.activeHazards) {
-      void reloadHazard(map, id);
+    void reloadPointLayer(map, POINTS_LAYER_ID);
+    void reloadPointLayer(map, LANDPRICE_LAYER_ID);
+    for (const id of stateRef.current.activeOverlays) {
+      void reloadOverlay(map, id);
     }
+  }
+
+  /** ポリゴンレイヤーの塗り。用途地域は種別ごとのデータ駆動色、それ以外は単色 */
+  function overlayPaint(layerId: string): maplibregl.FillLayerSpecification["paint"] {
+    if (layerId === "youto") {
+      const matchExpr: unknown[] = ["match", ["get", YOUTO_PROP_KEY]];
+      for (const [kind, color] of Object.entries(YOUTO_COLORS)) matchExpr.push(kind, color);
+      matchExpr.push(YOUTO_FALLBACK_COLOR);
+      const expr = matchExpr as unknown as maplibregl.DataDrivenPropertyValueSpecification<string>;
+      return { "fill-color": expr, "fill-opacity": 0.3, "fill-outline-color": expr };
+    }
+    const color = HAZARD_COLORS[layerId] ?? "#888888";
+    return { "fill-color": color, "fill-opacity": 0.35, "fill-outline-color": color };
   }
 
   // 地図の初期化（マウント時に一度だけ）
@@ -130,6 +203,7 @@ export function MapView({ layers, pointMode, activeHazards, period, onSelect, on
 
     map.on("load", () => {
       map.addSource(POINTS_LAYER_ID, { type: "geojson", data: EMPTY_FC });
+      map.addSource(LANDPRICE_LAYER_ID, { type: "geojson", data: EMPTY_FC });
       map.addLayer({
         id: HEATMAP_LAYER,
         type: "heatmap",
@@ -190,8 +264,25 @@ export function MapView({ layers, pointMode, activeHazards, period, onSelect, on
           "circle-opacity": 0.9,
         },
       });
+      // 地価公示ポイント: 取引ポイント（青系）と見分けるため黄+濃い縁取り
+      map.addLayer({
+        id: LANDPRICE_CIRCLE_LAYER,
+        type: "circle",
+        source: LANDPRICE_LAYER_ID,
+        layout: { visibility: "none" },
+        paint: {
+          "circle-color": LAND_PRICE_COLOR,
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 13, 5, 15, 9],
+          "circle-stroke-width": 1.5,
+          "circle-stroke-color": "#0b0b0b",
+          "circle-opacity": 0.95,
+        },
+      });
       setMapReady(true);
       reloadActive(map);
+      onMapReady?.({
+        flyTo: (lngLat, zoom = 13) => map.flyTo({ center: lngLat, zoom }),
+      });
     });
 
     let moveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -201,21 +292,25 @@ export function MapView({ layers, pointMode, activeHazards, period, onSelect, on
     });
 
     map.on("click", (e) => {
-      const { pointMode, activeHazards, layers, onSelect } = stateRef.current;
+      const { pointMode, showLandPrice, activeOverlays, layers, onSelect } = stateRef.current;
       const queryLayers: string[] = [];
       if (pointMode === "points" && map.getLayer(CIRCLE_LAYER)) queryLayers.push(CIRCLE_LAYER);
-      for (const id of activeHazards) {
-        if (map.getLayer(`hazard-${id}`)) queryLayers.push(`hazard-${id}`);
+      if (showLandPrice && map.getLayer(LANDPRICE_CIRCLE_LAYER))
+        queryLayers.push(LANDPRICE_CIRCLE_LAYER);
+      for (const id of activeOverlays) {
+        if (map.getLayer(`overlay-${id}`)) queryLayers.push(`overlay-${id}`);
       }
       const feats = queryLayers.length
         ? map.queryRenderedFeatures(e.point, { layers: queryLayers })
         : [];
-      const pointFeat = feats.find((f) => f.layer.id === CIRCLE_LAYER);
+      const pointFeat = feats.find(
+        (f) => f.layer.id === CIRCLE_LAYER || f.layer.id === LANDPRICE_CIRCLE_LAYER,
+      );
       const seen = new Set<string>();
-      const hazards = feats
-        .filter((f) => f.layer.id.startsWith("hazard-"))
+      const overlays = feats
+        .filter((f) => f.layer.id.startsWith("overlay-"))
         .map((f) => {
-          const layerId = f.layer.id.slice("hazard-".length);
+          const layerId = f.layer.id.slice("overlay-".length);
           return {
             layerId,
             label: layers.find((l) => l.id === layerId)?.label ?? layerId,
@@ -228,23 +323,33 @@ export function MapView({ layers, pointMode, activeHazards, period, onSelect, on
           seen.add(key);
           return true;
         });
-      if (!pointFeat && hazards.length === 0) {
+      if (!pointFeat && overlays.length === 0) {
         onSelect(null);
         return;
       }
       onSelect({
-        point: pointFeat ? { ...(pointFeat.properties ?? {}) } : null,
-        hazards,
+        point: pointFeat
+          ? {
+              layerId:
+                pointFeat.layer.id === LANDPRICE_CIRCLE_LAYER
+                  ? LANDPRICE_LAYER_ID
+                  : POINTS_LAYER_ID,
+              props: { ...(pointFeat.properties ?? {}) },
+            }
+          : null,
+        overlays,
         lngLat: [e.lngLat.lng, e.lngLat.lat],
       });
     });
 
-    map.on("mouseenter", CIRCLE_LAYER, () => {
-      map.getCanvas().style.cursor = "pointer";
-    });
-    map.on("mouseleave", CIRCLE_LAYER, () => {
-      map.getCanvas().style.cursor = "";
-    });
+    for (const hoverLayer of [CIRCLE_LAYER, LANDPRICE_CIRCLE_LAYER]) {
+      map.on("mouseenter", hoverLayer, () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", hoverLayer, () => {
+        map.getCanvas().style.cursor = "";
+      });
+    }
 
     return () => {
       clearTimeout(moveTimer);
@@ -254,12 +359,12 @@ export function MapView({ layers, pointMode, activeHazards, period, onSelect, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 期間変更 → ポイントのキャッシュを破棄して再取得
+  // 期間変更 → 取引ポイントのキャッシュを破棄して再取得
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     pointsLoader.current.clear();
-    void reloadPoints(map);
+    void reloadPointLayer(map, POINTS_LAYER_ID);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapReady, period.from, period.to]);
 
@@ -271,35 +376,42 @@ export function MapView({ layers, pointMode, activeHazards, period, onSelect, on
     map.setLayoutProperty(HEATMAP_LAYER, "visibility", pointMode === "heatmap" ? "visible" : "none");
   }, [mapReady, pointMode]);
 
-  // ハザードレイヤーのトグル
+  // 地価公示ポイントのトグル・年変更
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    map.setLayoutProperty(
+      LANDPRICE_CIRCLE_LAYER,
+      "visibility",
+      showLandPrice ? "visible" : "none",
+    );
+    if (showLandPrice) void reloadPointLayer(map, LANDPRICE_LAYER_ID);
+    else setLayerStatus(LANDPRICE_LAYER_ID, null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, showLandPrice, landPriceYear]);
+
+  // ポリゴンオーバーレイ（ハザード・用途地域）のトグル
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     for (const info of layers.filter((l) => l.kind === "polygon")) {
-      const active = activeHazards.includes(info.id);
-      const layerId = `hazard-${info.id}`;
-      const sourceId = `hazard-src-${info.id}`;
+      const active = activeOverlays.includes(info.id);
+      const layerId = `overlay-${info.id}`;
+      const sourceId = `overlay-src-${info.id}`;
       if (!map.getSource(sourceId)) {
         if (!active) continue;
         map.addSource(sourceId, { type: "geojson", data: EMPTY_FC });
-        const color = HAZARD_COLORS[info.id] ?? "#888888";
         // ポイントより下、ベース地図より上に挿入
         map.addLayer(
-          {
-            id: layerId,
-            type: "fill",
-            source: sourceId,
-            paint: { "fill-color": color, "fill-opacity": 0.35, "fill-outline-color": color },
-          },
+          { id: layerId, type: "fill", source: sourceId, paint: overlayPaint(info.id) },
           map.getLayer(HEATMAP_LAYER) ? HEATMAP_LAYER : undefined,
         );
       }
       map.setLayoutProperty(layerId, "visibility", active ? "visible" : "none");
-      if (active) void reloadHazard(map, info.id);
+      if (active) void reloadOverlay(map, info.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapReady, activeHazards, layers]);
+  }, [mapReady, activeOverlays, layers]);
 
-  if (!pointLayer) return null;
   return <div ref={containerRef} className="map-container" />;
 }

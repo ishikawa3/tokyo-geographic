@@ -95,6 +95,30 @@ describe("GET /api/price-history", () => {
   });
 });
 
+describe("GET /api/ranking", () => {
+  it("23区のランキングを中央値降順で返す", async () => {
+    const res = await app.request("/api/ranking");
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      quarters: number;
+      entries: Array<{ city: string; name: string; median: number; count: number }>;
+    };
+    expect(body.entries).toHaveLength(23);
+    for (const e of body.entries) {
+      expect(e.city).toMatch(/^131\d\d$/);
+      expect(e.median).toBeGreaterThan(0);
+      expect(e.count).toBeGreaterThan(0);
+    }
+    const medians = body.entries.map((e) => e.median);
+    expect([...medians].sort((a, b) => b - a)).toEqual(medians);
+  });
+  it("quarters の範囲外は 400", async () => {
+    expect((await app.request("/api/ranking?quarters=0")).status).toBe(400);
+    expect((await app.request("/api/ranking?quarters=9")).status).toBe(400);
+    expect((await app.request("/api/ranking?quarters=abc")).status).toBe(400);
+  });
+});
+
 describe("GET /api/tiles/:layerId/:z/:x/:y", () => {
   it("GeoJSON FeatureCollection を返す", async () => {
     const res = await app.request("/api/tiles/transaction-points/13/7276/3225");

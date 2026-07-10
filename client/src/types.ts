@@ -2,6 +2,8 @@ export interface LayerInfo {
   id: string;
   label: string;
   kind: "point" | "polygon";
+  /** UI上のセクション分け */
+  group: "price" | "hazard" | "cityplan";
   minZoom: number;
   maxZoom: number;
   /** 実APIに接続済みか（false = モックのみで動作） */
@@ -16,15 +18,22 @@ export interface PeriodRange {
   to: string;
 }
 
-export interface HazardHit {
+/** クリック地点に重なっていたポリゴンレイヤー（ハザード・用途地域） */
+export interface OverlayHit {
   layerId: string;
   label: string;
   props: Record<string, unknown>;
 }
 
+export interface SelectedPoint {
+  /** どのポイントレイヤー由来か（"transaction-points" | "land-price-points"） */
+  layerId: string;
+  props: Record<string, unknown>;
+}
+
 export interface Selection {
-  point: Record<string, unknown> | null;
-  hazards: HazardHit[];
+  point: SelectedPoint | null;
+  overlays: OverlayHit[];
   lngLat: [number, number];
 }
 

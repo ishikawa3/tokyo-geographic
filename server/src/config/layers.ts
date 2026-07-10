@@ -12,6 +12,8 @@ export interface LayerDef {
   apiCode: string | null;
   label: string;
   kind: "point" | "polygon";
+  /** UI上のセクション分け（価格系 / ハザード / 都市計画） */
+  group: "price" | "hazard" | "cityplan";
   minZoom: number;
   maxZoom: number;
   /** 上流へ中継を許可するクエリパラメータのホワイトリスト */
@@ -26,6 +28,7 @@ export const layers: LayerDef[] = [
     apiCode: "XPT001",
     label: "取引価格ポイント",
     kind: "point",
+    group: "price",
     minZoom: 11,
     maxZoom: 15,
     allowedParams: ["from", "to", "priceClassification"],
@@ -36,16 +39,30 @@ export const layers: LayerDef[] = [
     apiCode: "XPT002",
     label: "地価公示・地価調査",
     kind: "point",
+    group: "price",
     minZoom: 13,
     maxZoom: 15,
     allowedParams: ["year", "priceClassification"],
-    fixture: "points.geojson",
+    fixture: "land-price-points.geojson",
+  },
+  {
+    id: "youto",
+    // 公式マニュアルでは XKT002 と思われるが未確認。確認後に埋めること（PLAN.md §3）
+    apiCode: null,
+    label: "用途地域",
+    kind: "polygon",
+    group: "cityplan",
+    minZoom: 11,
+    maxZoom: 15,
+    allowedParams: [],
+    fixture: "youto.geojson",
   },
   {
     id: "flood",
     apiCode: null,
     label: "洪水浸水想定区域",
     kind: "polygon",
+    group: "hazard",
     minZoom: 11,
     maxZoom: 15,
     allowedParams: [],
@@ -56,6 +73,7 @@ export const layers: LayerDef[] = [
     apiCode: null,
     label: "土砂災害警戒区域",
     kind: "polygon",
+    group: "hazard",
     minZoom: 11,
     maxZoom: 15,
     allowedParams: [],
@@ -66,6 +84,7 @@ export const layers: LayerDef[] = [
     apiCode: null,
     label: "津波浸水想定",
     kind: "polygon",
+    group: "hazard",
     minZoom: 11,
     maxZoom: 15,
     allowedParams: [],
@@ -76,6 +95,7 @@ export const layers: LayerDef[] = [
     apiCode: null,
     label: "高潮浸水想定区域",
     kind: "polygon",
+    group: "hazard",
     minZoom: 11,
     maxZoom: 15,
     allowedParams: [],

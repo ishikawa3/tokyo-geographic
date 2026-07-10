@@ -1,0 +1,221 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.776625,
+          35.67166
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "2610000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田2-25",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.77074,
+          35.690977
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "3060000",
+        "PriceCategory": "都道府県地価調査",
+        "StandardLotNumber": "千代田1-5",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.775602,
+          35.687522
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "3130000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田6-18",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.761761,
+          35.684128
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "3850000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田4-9",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.766267,
+          35.675181
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "1680000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田1-14",
+        "UseCategory": "商業地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.756061,
+          35.686624
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "4610000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田9-1",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.768864,
+          35.675192
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "2520000",
+        "PriceCategory": "都道府県地価調査",
+        "StandardLotNumber": "千代田3-16",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.763693,
+          35.68137
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "3700000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田7-16",
+        "UseCategory": "商業地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.755352,
+          35.693728
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "1400000",
+        "PriceCategory": "都道府県地価調査",
+        "StandardLotNumber": "千代田5-25",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.752147,
+          35.677543
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "1330000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田5-27",
+        "UseCategory": "商業地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.758987,
+          35.681448
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "870000",
+        "PriceCategory": "都道府県地価調査",
+        "StandardLotNumber": "千代田8-8",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.75761,
+          35.689282
+        ]
+      },
+      "properties": {
+        "TargetYearPrice": "4610000",
+        "PriceCategory": "地価公示",
+        "StandardLotNumber": "千代田3-21",
+        "UseCategory": "住宅地",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101"
+      }
+    }
+  ]
+}
