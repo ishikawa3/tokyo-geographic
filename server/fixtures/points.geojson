@@ -1,0 +1,505 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.763246,
+          35.674041
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "有楽町",
+        "TradePrice": "25700000",
+        "Area": "28",
+        "UnitPrice": "917857",
+        "BuildingYear": "1997年",
+        "Structure": "ＳＲＣ",
+        "Use": "事務所",
+        "CityPlanning": "近隣商業地域",
+        "Period": "2024年第２四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.763712,
+          35.674274
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "大手町",
+        "TradePrice": "33500000",
+        "Area": "120",
+        "UnitPrice": "279167",
+        "BuildingYear": "1996年",
+        "Structure": "ＳＲＣ",
+        "Use": "住宅",
+        "CityPlanning": "第１種住居地域",
+        "Period": "2024年第４四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.78382,
+          35.67412
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "内神田",
+        "TradePrice": "71000000",
+        "Area": "76",
+        "UnitPrice": "934211",
+        "BuildingYear": "2007年",
+        "Structure": "木造",
+        "Use": "住宅",
+        "CityPlanning": "第１種住居地域",
+        "Period": "2024年第４四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.769722,
+          35.667477
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地と建物)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "麹町",
+        "TradePrice": "248100000",
+        "Area": "131",
+        "UnitPrice": "1893893",
+        "BuildingYear": "2018年",
+        "Structure": "ＲＣ",
+        "Use": "共同住宅",
+        "CityPlanning": "近隣商業地域",
+        "Period": "2025年第１四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.761311,
+          35.677063
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "麹町",
+        "TradePrice": "668800000",
+        "Area": "84",
+        "UnitPrice": "7961905",
+        "BuildingYear": "1986年",
+        "Structure": "鉄骨造",
+        "Use": "事務所",
+        "CityPlanning": "商業地域",
+        "Period": "2025年第１四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.771667,
+          35.688007
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "有楽町",
+        "TradePrice": "17300000",
+        "Area": "137",
+        "UnitPrice": "126277",
+        "BuildingYear": "2003年",
+        "Structure": "木造",
+        "Use": "住宅",
+        "CityPlanning": "商業地域",
+        "Period": "2024年第３四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.762945,
+          35.669146
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "麹町",
+        "TradePrice": "40400000",
+        "Area": "126",
+        "UnitPrice": "320635",
+        "BuildingYear": "2015年",
+        "Structure": "木造",
+        "Use": "住宅",
+        "CityPlanning": "近隣商業地域",
+        "Period": "2025年第２四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.759323,
+          35.691806
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "丸の内",
+        "TradePrice": "90200000",
+        "Area": "86",
+        "UnitPrice": "1048837",
+        "BuildingYear": "2009年",
+        "Structure": "鉄骨造",
+        "Use": "事務所",
+        "CityPlanning": "第１種住居地域",
+        "Period": "2025年第２四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.753244,
+          35.678616
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地と建物)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "丸の内",
+        "TradePrice": "265900000",
+        "Area": "99",
+        "UnitPrice": "2685859",
+        "BuildingYear": "2019年",
+        "Structure": "木造",
+        "Use": "共同住宅",
+        "CityPlanning": "第１種住居地域",
+        "Period": "2024年第４四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.760357,
+          35.692594
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "内神田",
+        "TradePrice": "531900000",
+        "Area": "146",
+        "UnitPrice": "3643151",
+        "BuildingYear": "1994年",
+        "Structure": "ＳＲＣ",
+        "Use": "住宅",
+        "CityPlanning": "近隣商業地域",
+        "Period": "2025年第４四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.763231,
+          35.668434
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地と建物)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "有楽町",
+        "TradePrice": "27900000",
+        "Area": "142",
+        "UnitPrice": "196479",
+        "BuildingYear": "2017年",
+        "Structure": "鉄骨造",
+        "Use": "事務所",
+        "CityPlanning": "近隣商業地域",
+        "Period": "2024年第４四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.783424,
+          35.675136
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "有楽町",
+        "TradePrice": "36300000",
+        "Area": "81",
+        "UnitPrice": "448148",
+        "BuildingYear": "2011年",
+        "Structure": "鉄骨造",
+        "Use": "事務所",
+        "CityPlanning": "近隣商業地域",
+        "Period": "2025年第２四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.756351,
+          35.679807
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "大手町",
+        "TradePrice": "74800000",
+        "Area": "35",
+        "UnitPrice": "2137143",
+        "BuildingYear": "1992年",
+        "Structure": "ＳＲＣ",
+        "Use": "事務所",
+        "CityPlanning": "商業地域",
+        "Period": "2024年第２四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.77937,
+          35.667065
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "麹町",
+        "TradePrice": "144400000",
+        "Area": "54",
+        "UnitPrice": "2674074",
+        "BuildingYear": "2002年",
+        "Structure": "木造",
+        "Use": "共同住宅",
+        "CityPlanning": "商業地域",
+        "Period": "2025年第４四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.776211,
+          35.682281
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "麹町",
+        "TradePrice": "799800000",
+        "Area": "109",
+        "UnitPrice": "7337615",
+        "BuildingYear": "2017年",
+        "Structure": "木造",
+        "Use": "事務所",
+        "CityPlanning": "商業地域",
+        "Period": "2024年第３四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.782098,
+          35.692964
+        ]
+      },
+      "properties": {
+        "Type": "宅地(土地と建物)",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "神田錦町",
+        "TradePrice": "14600000",
+        "Area": "48",
+        "UnitPrice": "304167",
+        "BuildingYear": "1992年",
+        "Structure": "鉄骨造",
+        "Use": "共同住宅",
+        "CityPlanning": "第１種住居地域",
+        "Period": "2025年第３四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.755139,
+          35.669114
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "有楽町",
+        "TradePrice": "33000000",
+        "Area": "143",
+        "UnitPrice": "230769",
+        "BuildingYear": "2017年",
+        "Structure": "鉄骨造",
+        "Use": "事務所",
+        "CityPlanning": "第１種住居地域",
+        "Period": "2024年第４四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.776256,
+          35.688667
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "九段南",
+        "TradePrice": "93000000",
+        "Area": "131",
+        "UnitPrice": "709924",
+        "BuildingYear": "2011年",
+        "Structure": "鉄骨造",
+        "Use": "共同住宅",
+        "CityPlanning": "第１種住居地域",
+        "Period": "2025年第３四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.781671,
+          35.690454
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "有楽町",
+        "TradePrice": "252700000",
+        "Area": "50",
+        "UnitPrice": "5054000",
+        "BuildingYear": "2006年",
+        "Structure": "木造",
+        "Use": "住宅",
+        "CityPlanning": "近隣商業地域",
+        "Period": "2025年第３四半期"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.772168,
+          35.667701
+        ]
+      },
+      "properties": {
+        "Type": "中古マンション等",
+        "Prefecture": "東京都",
+        "Municipality": "千代田区",
+        "MunicipalityCode": "13101",
+        "DistrictName": "有楽町",
+        "TradePrice": "509300000",
+        "Area": "51",
+        "UnitPrice": "9986275",
+        "BuildingYear": "2008年",
+        "Structure": "ＲＣ",
+        "Use": "事務所",
+        "CityPlanning": "商業地域",
+        "Period": "2024年第４四半期"
+      }
+    }
+  ]
+}
